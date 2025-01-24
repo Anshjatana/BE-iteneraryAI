@@ -12,25 +12,24 @@ router.post('/', async (req, res) => {
       userId,
       destination,
       placeId,
-      startDate,
-      endDate,
+      numberOfDays,
       travelGroup,
       interests,
       budget,
     } = req.body;
 
     // Validate required fields
-    if (!userId || !destination || !placeId || !startDate || !endDate || !interests || !budget) {
+    if (!userId || !destination || !placeId || !numberOfDays || !interests || !budget) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     // Generate itinerary recommendations using Gemini service
-    const duration = Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 3600 * 24));
 
     const recommendations = await geminiService.generateItineraryRecommendations({
       destination,
-      duration,
+      duration: numberOfDays,
       interests,
+      budget,
     });
     console.log('Recommendations:', recommendations); // Log the response
 
@@ -39,8 +38,7 @@ router.post('/', async (req, res) => {
       userId,
       destination,
       placeId,
-      startDate,
-      endDate,
+      numberOfDays,
       travelGroup,
       interests,
       budget,
