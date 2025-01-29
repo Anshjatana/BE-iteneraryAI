@@ -8,6 +8,13 @@ const geminiService = new GeminiService();
 // Create new itinerary with recommendations from Gemini service
 router.post('/', async (req, res) => {
   try {
+    res.setHeader('Content-Type', 'application/json'); // Set proper content type for SSE
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('Access-Control-Allow-Origin', '*');  // Allows all origins
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
     const {
       userId,
       destination,
