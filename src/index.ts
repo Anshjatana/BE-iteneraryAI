@@ -12,22 +12,30 @@ const allowedOrigins = ['http://localhost:3000', 'https://itinerary.anshjatana.o
 const corsOptions = {
   origin: (origin: string | undefined, callback: (arg0: Error | null, arg1: boolean | undefined) => void) => {
     if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true); // Allow the request
+      callback(null, true);
     } else {
+      console.log(`Blocked by CORS: ${origin}`); // Debugging CORS issues
       callback(new Error('Not allowed by CORS'), false);
     }
   },
-  methods: 'GET, POST, PUT, DELETE, OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization , Cookie',
-  credentials: true, // Allow cookies/credentials
-  preflightContinue: true, // Automatically handle preflight requests
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  credentials: true,
+  optionsSuccessStatus: 200, // Ensure the OPTIONS response is OK
 };
 
-// Use CORS middleware
+// Apply CORS
 app.use(cors(corsOptions));
 
-// Handle preflight requests manually (for strict CORS policies)
-app.options('*', cors(corsOptions));
+// Handle preflight requests manually
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.sendStatus(200);
+});
+
 
 app.use('/api/itineraries', itineraryRoutes);
 app.use('/api/ai', aiRoutes);
