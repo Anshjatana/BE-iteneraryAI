@@ -10,8 +10,14 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 8000;
 
+// ✅ Update CORS policy
+app.use(cors({
+  origin: ['https://itinerary.anshjatana.online'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
+
 // Middleware
-app.use(cors());
 app.use(express.json());
 
 // Routes
