@@ -18,7 +18,7 @@ const corsOptions = {
     }
   },
   methods: 'GET, POST, PUT, DELETE, OPTIONS',
-  allowedHeaders: 'Content-Type, Authorization',
+  allowedHeaders: 'Content-Type, Authorization , Cookie',
   credentials: true, // Allow cookies/credentials
   preflightContinue: true, // Automatically handle preflight requests
 };
