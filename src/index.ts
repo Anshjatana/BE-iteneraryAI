@@ -17,6 +17,7 @@ app.use(cors({
   credentials: true,  // ✅ Allow cookies and auth headers
   allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
+app.options('*', cors());
 
 // Middleware
 app.use(express.json());
