@@ -20,7 +20,7 @@ const corsOptions = {
   methods: 'GET, POST, PUT, DELETE, OPTIONS',
   allowedHeaders: 'Content-Type, Authorization',
   credentials: true, // Allow cookies/credentials
-  preflightContinue: false, // Automatically handle preflight requests
+  preflightContinue: true, // Automatically handle preflight requests
 };
 
 // Use CORS middleware
