@@ -1,9 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import { aiRoutes } from './routes/ai.routes.js';
-import { itineraryRoutes } from './routes/itinerary.routes.js';
+import dotenv from 'dotenv';
+import { itineraryRoutes } from './routes/itinerary.routes';
+import { aiRoutes } from './routes/ai.routes';
+import { connectDB } from './config/db';
 
 const app = express();
+
+dotenv.config();
 
 // Define the allowed origins
 const allowedOrigins = ['http://localhost:3000', 'https://itinerary.anshjatana.online'];
@@ -11,6 +15,7 @@ const allowedOrigins = ['http://localhost:3000', 'https://itinerary.anshjatana.o
 // CORS options
 const corsOptions = {
   origin: (origin: string | undefined, callback: (arg0: Error | null, arg1: boolean | undefined) => void) => {
+    console.log(`Incoming origin: ${origin}`); // Debugging CORS issues
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -24,21 +29,13 @@ const corsOptions = {
   optionsSuccessStatus: 200, // Ensure the OPTIONS response is OK
 };
 
-// Apply CORS
+app.use(express.json());
+
 app.use(cors(corsOptions));
-
-// Handle preflight requests manually
-app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin);
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.sendStatus(200);
-});
-
-
 app.use('/api/itineraries', itineraryRoutes);
 app.use('/api/ai', aiRoutes);
+
+connectDB();
 
 // Start the server
 const PORT = process.env.PORT || 5000;

@@ -8,7 +8,7 @@ export class GeminiService {
 
   async generateItineraryRecommendations(params: {
     destination: string;
-    duration: number;
+    duration: string;
     interests: string[];
     budget: string;
   }) {
@@ -61,10 +61,12 @@ Focus on activities matching the specified interests. Include specific restauran
 
     try {
       const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      return JSON.parse(response.text());
+      const responseText = await result.response.text();
+      const sanitizedResponse = responseText.replace(/```[A-Za-z]*\n|\n```/g, '');  // Clean up unwanted formatting
+      const parsedResponse = JSON.parse(sanitizedResponse);
+      return parsedResponse;
     } catch (error) {
-      console.error('Error generating recommendations:', error);
+      console.error('Error generating or parsing recommendations:', error);
       throw new Error('Failed to generate recommendations');
     }
   }
