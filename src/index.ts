@@ -10,7 +10,7 @@ const app = express();
 dotenv.config();
 
 // Define the allowed origins
-const allowedOrigins = ['http://localhost:3000', 'https://itinerary.anshjatana.online'];
+const allowedOrigins = ['http://localhost:3000/', 'https://itinerary.anshjatana.online/'];
 
 // CORS options
 const corsOptions = {
