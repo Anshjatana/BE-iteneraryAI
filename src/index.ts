@@ -10,17 +10,17 @@ const app = express();
 dotenv.config();
 
 // Define the allowed origins
-const allowedOrigins = ['http://localhost:3000/', 'https://itinerary.anshjatana.online/'];
+const allowedOrigins = ['http://localhost:3000', 'https://itinerary.anshjatana.online'];
 
 // CORS options
 const corsOptions = {
-  origin: (origin: string | undefined, callback: (arg0: Error | null, arg1: boolean | undefined) => void) => {
+  origin: (origin: string | undefined, callback: (arg0: Error | null, arg1?: boolean) => void) => {
     console.log(`Incoming origin: ${origin}`); // Debugging CORS issues
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.log(`Blocked by CORS: ${origin}`); // Debugging CORS issues
-      callback(new Error('Not allowed by CORS'), false);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
