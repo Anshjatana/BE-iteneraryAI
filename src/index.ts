@@ -1,53 +1,62 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 import { itineraryRoutes } from "./routes/itinerary.routes";
 import { connectDB } from "./config/db";
 
 const app = express();
-
 dotenv.config();
 
-// Define the allowed origins
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://itinerary.anshjatana.online",
-];
+// NUCLEAR CORS FIX - This handles everything
+app.use((req, res, next) => {
+  // Allow all origins
+  res.header("Access-Control-Allow-Origin", "*");
 
-// CORS options
-const corsOptions = {
-  origin: true, // Allow all origins
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["*"],
-  optionsSuccessStatus: 200,
-};
+  // Allow all methods
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS, PATCH"
+  );
 
-// Middleware
-app.use(express.json());
-app.use(cors(corsOptions));
+  // Allow all headers
+  res.header("Access-Control-Allow-Headers", "*");
 
-// Routes
-app.use("/api/itineraries", itineraryRoutes);
+  // Allow credentials
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
+
+  next();
+});
+
+// Body parser
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
 
 // Test endpoint
 app.get("/api/test", (req, res) => {
   res.json({
-    message: "API is working!",
+    success: true,
+    message: "CORS is working!",
     origin: req.headers.origin,
+    method: req.method,
     timestamp: new Date().toISOString(),
   });
 });
 
+// Routes
+app.use("/api/itineraries", itineraryRoutes);
+
+// Catch all handler
+app.get("*", (req, res) => {
+  res.json({ message: "API is running", path: req.path });
+});
+
+// Connect to database
 connectDB();
 
-// For Vercel serverless functions
-if (process.env.VERCEL) {
-  module.exports = app;
-} else {
-  // For local development
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+// Export for Vercel
+export default app;
