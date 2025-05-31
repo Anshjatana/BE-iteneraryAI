@@ -8,16 +8,6 @@ const geminiService = new GeminiService();
 // Create new itinerary with recommendations from Gemini service
 router.post("/", async (req, res) => {
   try {
-    // REMOVE all these manual CORS headers - let the middleware handle it
-    // res.setHeader('Access-Control-Allow-Origin', '*');
-    // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    // res.setHeader('Access-Control-Allow-Credentials', 'true');
-
-    // Keep only the necessary headers for your API response
-    res.setHeader("Content-Type", "application/json");
-    res.setHeader("Cache-Control", "no-cache");
-
     const {
       userId,
       destination,
