@@ -16,37 +16,10 @@ const allowedOrigins = [
 
 // CORS options
 const corsOptions = {
-  origin: (
-    origin: string | undefined,
-    callback: (arg0: Error | null, arg1?: boolean) => void
-  ) => {
-    console.log(`Incoming origin: ${origin}`);
-
-    // Allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin) {
-      console.log("No origin - allowing request");
-      callback(null, true);
-      return;
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      console.log(`Origin allowed: ${origin}`);
-      callback(null, true);
-    } else {
-      console.log(`Blocked by CORS: ${origin}`);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "Cookie",
-    "X-Requested-With",
-    "Accept",
-    "Origin",
-  ],
+  origin: true, // Allow all origins
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["*"],
   optionsSuccessStatus: 200,
 };
 
