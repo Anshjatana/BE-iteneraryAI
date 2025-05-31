@@ -1,20 +1,23 @@
-import express from 'express';
-import Itinerary  from '../models/Itinerary';
-import { GeminiService } from '../services/gemini.service';
+import express from "express";
+import Itinerary from "../models/Itinerary";
+import { GeminiService } from "../services/gemini.service";
 
 const router = express.Router();
 const geminiService = new GeminiService();
 
 // Create new itinerary with recommendations from Gemini service
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
-    res.setHeader('Content-Type', 'application/json'); // Set proper content type for SSE
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection', 'keep-alive');
-    res.setHeader('Access-Control-Allow-Origin', '*');  // Allows all origins
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // REMOVE all these manual CORS headers - let the middleware handle it
+    // res.setHeader('Access-Control-Allow-Origin', '*');
+    // res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    // res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    // res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    // Keep only the necessary headers for your API response
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-cache");
+
     const {
       userId,
       destination,
@@ -26,19 +29,26 @@ router.post('/', async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!userId || !destination || !placeId || !numberOfDays || !interests || !budget) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (
+      !userId ||
+      !destination ||
+      !placeId ||
+      !numberOfDays ||
+      !interests ||
+      !budget
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     // Generate itinerary recommendations using Gemini service
-
-    const recommendations = await geminiService.generateItineraryRecommendations({
-      destination,
-      duration: numberOfDays,
-      interests,
-      budget,
-    });
-    console.log('Recommendations:', recommendations); // Log the response
+    const recommendations =
+      await geminiService.generateItineraryRecommendations({
+        destination,
+        duration: numberOfDays,
+        interests,
+        budget,
+      });
+    console.log("Recommendations:", recommendations); // Log the response
 
     // Create new itinerary
     const itinerary = new Itinerary({
@@ -55,44 +65,52 @@ router.post('/', async (req, res) => {
     await itinerary.save();
     res.status(201).json(itinerary);
   } catch (error) {
-    console.error('Error creating itinerary:', error);
-    res.status(500).json({ error: 'Failed to create itinerary' });
+    console.error("Error creating itinerary:", error);
+    res.status(500).json({ error: "Failed to create itinerary" });
   }
 });
 
 // Get user's itineraries
-router.get('/user/:userId', async (req, res) => {
+router.get("/user/:userId", async (req, res) => {
   try {
     const itineraries = await Itinerary.find({ userId: req.params.userId });
     res.json(itineraries);
   } catch (error) {
-    console.error('Error fetching user itineraries:', error);
-    res.status(500).json({ error: 'Failed to fetch itineraries' });
+    console.error("Error fetching user itineraries:", error);
+    res.status(500).json({ error: "Failed to fetch itineraries" });
   }
 });
 
 // Get single itinerary
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const itinerary = await Itinerary.findById(req.params.id);
     if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerary not found' });
+      return res.status(404).json({ error: "Itinerary not found" });
     }
     res.json(itinerary);
   } catch (error) {
-    console.error('Error fetching itinerary:', error);
-    res.status(500).json({ error: 'Failed to fetch itinerary' });
+    console.error("Error fetching itinerary:", error);
+    res.status(500).json({ error: "Failed to fetch itinerary" });
   }
 });
 
 // Update itinerary
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
-    const { destination, placeId, startDate, endDate, interests, budget } = req.body;
+    const { destination, placeId, startDate, endDate, interests, budget } =
+      req.body;
 
     // Validate required fields for update
-    if (!destination || !placeId || !startDate || !endDate || !interests || !budget) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (
+      !destination ||
+      !placeId ||
+      !startDate ||
+      !endDate ||
+      !interests ||
+      !budget
+    ) {
+      return res.status(400).json({ error: "Missing required fields" });
     }
 
     const itinerary = await Itinerary.findByIdAndUpdate(
@@ -102,27 +120,27 @@ router.put('/:id', async (req, res) => {
     );
 
     if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerary not found' });
+      return res.status(404).json({ error: "Itinerary not found" });
     }
 
     res.json(itinerary);
   } catch (error) {
-    console.error('Error updating itinerary:', error);
-    res.status(500).json({ error: 'Failed to update itinerary' });
+    console.error("Error updating itinerary:", error);
+    res.status(500).json({ error: "Failed to update itinerary" });
   }
 });
 
 // Delete itinerary
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const itinerary = await Itinerary.findByIdAndDelete(req.params.id);
     if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerary not found' });
+      return res.status(404).json({ error: "Itinerary not found" });
     }
-    res.json({ message: 'Itinerary deleted successfully' });
+    res.json({ message: "Itinerary deleted successfully" });
   } catch (error) {
-    console.error('Error deleting itinerary:', error);
-    res.status(500).json({ error: 'Failed to delete itinerary' });
+    console.error("Error deleting itinerary:", error);
+    res.status(500).json({ error: "Failed to delete itinerary" });
   }
 });
 
